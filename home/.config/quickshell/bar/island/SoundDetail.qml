@@ -29,6 +29,7 @@ ColumnLayout {
     // Focus on open, or Tab goes to whatever had the keyboard before.
     Component.onCompleted: {
         AudioService.refreshEasyEffects()
+        AudioService.refreshCards()
         if (tabs.visible)
             root.forceActiveFocus()
     }
@@ -105,6 +106,30 @@ ColumnLayout {
                 text: AudioService.outputName(modelData)
                 chosen: AudioService.sink === modelData
                 onPicked: AudioService.choose(modelData)
+            }
+        }
+    }
+
+    Repeater {
+        model: AudioService.bluetoothCards
+
+        DetailSection {
+            id: card
+
+            required property var modelData
+
+            title: card.modelData.description
+
+            Repeater {
+                model: card.modelData.profiles
+
+                DetailChoice {
+                    required property var modelData
+
+                    text: modelData.description
+                    chosen: card.modelData.activeProfile === modelData.name
+                    onPicked: AudioService.setCardProfile(card.modelData, modelData)
+                }
             }
         }
     }

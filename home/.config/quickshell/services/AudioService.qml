@@ -92,6 +92,55 @@ Singleton {
             .concat(root.inputs).concat(root.inStreams)
     }
 
+    property var bluetoothCards: []
+
+    function parseBluetoothCards(text: string): var {
+        if (text.trim() === "")
+            return []
+        return JSON.parse(text)
+            .filter(card => card.properties?.["device.api"] === "bluez5"
+                && card.properties["api.bluez5.connection"] === "connected")
+            .map(card => ({
+                name: card.name,
+                description: card.properties["device.description"] || card.name,
+                activeProfile: card.active_profile,
+                profiles: Object.entries(card.profiles)
+                    .filter(([name, profile]) => profile.available)
+                    .map(([name, profile]) => ({ name: name, description: profile.description }))
+            }))
+            .filter(card => card.profiles.length > 0)
+    }
+
+    readonly property Process cardsProbe: Process {
+        command: ["sh", "-c", "command -v pactl >/dev/null && pactl --format=json list cards"]
+        running: true
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    root.bluetoothCards = root.parseBluetoothCards(text)
+                } catch (error) {
+                    console.warn("Cannot read the sound cards:", error)
+                }
+            }
+        }
+    }
+
+    readonly property Process cardProfileSetter: Process {
+        onExited: root.refreshCards()
+    }
+
+    function refreshCards(): void {
+        root.cardsProbe.running = true
+    }
+
+    function setCardProfile(card: var, profile: var): void {
+        root.cardProfileSetter.command = ["pactl", "set-card-profile", card.name, profile.name]
+        root.cardProfileSetter.running = true
+    }
+
+    onOutputsChanged: root.refreshCards()
+    onInputsChanged: root.refreshCards()
+
     // What every output's description starts with, word by word — on most
     // machines the sound card's name, repeated before each of its outputs.
     readonly property string outputPrefix: {
@@ -170,6 +219,7 @@ Singleton {
         + Theme.detailSection(1)
         + (root.streams.length > 0 ? Theme.detailSection(root.streams.length) : 0)
         + Theme.detailSection(root.outputs.length)
+        + root.bluetoothCards.reduce((total, card) => total + Theme.detailSection(card.profiles.length), 0)
         + (root.inputs.length > 0 ? Theme.detailSection(root.inputs.length) : 0)
         + (root.easyEffectsAvailable ? Theme.detailSection(1) : 0)
     readonly property int microphoneHeight: 2 * Theme.panelPadding + Theme.detailHeader
