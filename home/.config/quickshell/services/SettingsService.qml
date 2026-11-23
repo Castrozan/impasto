@@ -123,6 +123,7 @@ Singleton {
     readonly property alias deckOnEmpty: config.deckOnEmpty
     readonly property alias spectrumOnEmpty: config.spectrumOnEmpty
     readonly property alias workspaceCount: config.workspaceCount
+    readonly property alias workspacePageSize: config.workspacePageSize
     readonly property alias workspaceMax: config.workspaceMax
     readonly property alias workspaceMode: config.workspaceMode
     readonly property alias workspaceNumbers: config.workspaceNumbers
@@ -736,6 +737,9 @@ Singleton {
         // Dots always shown, and the total number of workspaces. Workspaces
         // past `workspaceCount` still show while occupied.
         property int workspaceCount: 5
+        // Exactly this many slots, the page holding the focused workspace
+        // (1-7, 8-14, ... for 7); 0 shows `workspaceCount` and what is used.
+        property int workspacePageSize: 0
         property int workspaceMax: 10
         // `shared`: every screen shares the same workspaces. `screen`: each
         // has ten of its own, the main screen 1–10 and the rest after it.

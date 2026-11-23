@@ -119,7 +119,12 @@ Rectangle {
         }
     }
 
+    readonly property int pageSize: root.preview ? 0 : SettingsService.workspacePageSize
+    readonly property int pageStart: Math.floor((root.activeId - 1) / root.pageSize) * root.pageSize + 1
+
     function isShown(n: int): bool {
+        if (root.pageSize > 0)
+            return n >= root.pageStart && n < root.pageStart + root.pageSize
         return root.preview ? n <= 5 : HyprlandService.isVisibleOn(n, root.screenName)
     }
 
@@ -128,6 +133,8 @@ Rectangle {
     }
 
     function neighbourOf(step: int): int {
+        if (root.pageSize > 0)
+            return Math.max(0, root.activeId + step)
         for (let candidate = root.activeId + step; candidate >= 1 && candidate <= HyprlandService.span; candidate += step) {
             if (root.isShown(candidate))
                 return candidate
@@ -204,7 +211,9 @@ Rectangle {
         Repeater {
             id: repeater
 
-            model: root.preview ? 5 : HyprlandService.span
+            model: root.preview ? 5
+                : root.pageSize > 0 ? Math.max(HyprlandService.span, root.pageStart + root.pageSize - 1)
+                : HyprlandService.span
 
             Item {
                 id: slot

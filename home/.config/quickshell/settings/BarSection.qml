@@ -270,6 +270,16 @@ SettingsSection {
         }
 
         SettingSlider {
+            label: Tr.t("Workspaces per page")
+            value: SettingsService.workspacePageSize
+            from: 0
+            to: 10
+            reading: SettingsService.workspacePageSize === 0
+                ? Tr.t("Off") : `${SettingsService.workspacePageSize}`
+            onMoved: value => SettingsService.set("workspacePageSize", Math.round(value))
+        }
+
+        SettingSlider {
             label: Tr.t("Workspaces available")
             // Per screen, each screen has ten.
             value: HyprlandService.maximum
