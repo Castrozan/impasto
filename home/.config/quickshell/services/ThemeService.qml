@@ -281,7 +281,33 @@ QtObject {
         root.paletteFileValid = !!colors && typeof colors === "object"
             && !!colors.background && !!colors.text && !!colors.accent
         if (root.paletteFileValid)
-            root.adoptColors(colors)
+            root.adoptColors(root.withDerivedTokens(colors))
+    }
+
+    function shiftedColor(hex: string, redShift: real, greenShift: real, blueShift: real): string {
+        const base = Qt.color(hex)
+        const clamp = channel => Math.max(0, Math.min(1, channel))
+        return Qt.rgba(clamp(base.r + redShift / 255), clamp(base.g + greenShift / 255),
+                       clamp(base.b + blueShift / 255), 1).toString()
+    }
+
+    function withDerivedTokens(colors: var): var {
+        const complete = Object.assign({}, colors)
+        const accent = Qt.color(colors.accent)
+        const accentLuminance = 0.2126 * accent.r + 0.7152 * accent.g + 0.0722 * accent.b
+        if (!complete.surface)
+            complete.surface = root.shiftedColor(colors.background, 14, 14, 14)
+        if (!complete.surfaceHover)
+            complete.surfaceHover = root.shiftedColor(complete.surface, 16, 16, 18)
+        if (!complete.border)
+            complete.border = root.shiftedColor(complete.surfaceHover, 16, 16, 20)
+        if (!complete.accentHover)
+            complete.accentHover = Qt.rgba(Math.min(1, accent.r * 1.15 + 15 / 255),
+                                           Math.min(1, accent.g * 1.15 + 15 / 255),
+                                           Math.min(1, accent.b * 1.15 + 15 / 255), 1).toString()
+        if (!complete.accentText)
+            complete.accentText = accentLuminance > 0.45 ? "#11111b" : "#ffffff"
+        return complete
     }
 
     function reloadAdaptiveColors(): void {
