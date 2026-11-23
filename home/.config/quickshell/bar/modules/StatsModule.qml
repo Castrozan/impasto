@@ -14,7 +14,7 @@ import "../../theme"
 import "../../services"
 import "../../components"
 
-// CPU load on the chip; the detail shows CPU and memory with recent history.
+// CPU load on the chip; the detail shows CPU, memory and graphics with recent history.
 // Cores, disks and temperatures are in the stats panel. The ring steps through
 // the indicator hues like the battery's.
 Item {
@@ -121,6 +121,15 @@ Item {
                 note: StatsService.bytes(StatsService.memoryUsed)
             }
 
+            CardLimit {
+                name: Tr.t("Graphics")
+                fraction: StatsService.gpu ? StatsService.gpu.usage / 100 : 0
+                visible: StatsService.gpu !== null
+                tint: Theme.green
+                note: StatsService.gpu && StatsService.gpu.celsius !== null
+                    ? `${StatsService.gpu.celsius}°` : ""
+            }
+
             // Each series under its own share, in its colour.
             RowLayout {
                 Layout.fillWidth: true
@@ -143,6 +152,16 @@ Item {
                     values: StatsService.memoryHistory
                     maximum: 1
                     stroke: Theme.blue
+                }
+
+                Sparkline {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    Layout.preferredWidth: 1
+                    visible: StatsService.gpu !== null
+                    values: StatsService.gpuHistory
+                    maximum: 1
+                    stroke: Theme.green
                 }
             }
         }

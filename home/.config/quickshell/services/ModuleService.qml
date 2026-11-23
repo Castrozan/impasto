@@ -56,7 +56,7 @@ Singleton {
         { id: "markets",       name: "Markets",       bar: true,  width: Theme.cardWidth, height: MarketsService.cardHeight },
         { id: "screentime",    name: "Screen time",   bar: true,  width: Theme.cardWidth, height: Theme.cardHeight(4, Theme.cardRowGap + 44) },
         { id: "github",        name: "GitHub",        bar: false, width: Theme.cardWidth, height: Theme.cardHeight(0, GithubService.cardGrid) },
-        { id: "stats",         name: "System",        bar: true,  width: Theme.cardWidth, height: Theme.cardHeight(2, Theme.cardRowGap + 36) },
+        { id: "stats",         name: "System",        bar: true,  width: Theme.cardWidth, height: Theme.cardHeight(StatsService.gpu !== null ? 3 : 2, Theme.cardRowGap + 36) },
         { id: "updates",       name: "Updates",       bar: true,  width: Theme.cardWidth, height: Theme.cardHeight(4, 0) },
         { id: "pet",           name: "Pet",           bar: true,  width: Theme.cardWidth, height: Theme.cardHeight(2, Theme.cardRowGap + 32) },
         { id: "games",         name: "Games",         bar: false, width: Theme.cardWidth, height: Theme.cardHeight(4, 0) },

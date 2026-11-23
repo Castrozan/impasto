@@ -9,7 +9,7 @@
 # │                                                                          │
 # ╰──────────────────────────────────────────────────────────────────────────╯
 
-"""CPU, memory, disk, network and temperature from /proc and /sys.
+"""CPU, memory, GPU, disk, network and temperature from /proc and /sys.
 
 Read from the kernel directly, so there is no locale- or version-dependent
 output to parse. CPU and network are rates and need two samples.
@@ -164,6 +164,36 @@ def temperature():
     return best
 
 
+def graphics():
+    """The busiest GPU's load and temperature, or None on a machine without
+    one: nvidia-smi when it answers, otherwise what amdgpu and i915 expose."""
+    if shutil.which("nvidia-smi"):
+        try:
+            result = subprocess.run(
+                ["nvidia-smi", "--query-gpu=utilization.gpu,temperature.gpu",
+                 "--format=csv,noheader,nounits"],
+                capture_output=True, text=True, timeout=5,
+            )
+            fields = [field.strip() for field in result.stdout.splitlines()[0].split(",")]
+            if result.returncode == 0 and fields[0].isdigit():
+                return {"usage": int(fields[0]),
+                        "celsius": int(fields[1]) if fields[1].isdigit() else None}
+        except (OSError, subprocess.SubprocessError, IndexError):
+            pass
+
+    best = None
+    for path in glob.glob("/sys/class/drm/card*/device/gpu_busy_percent"):
+        raw = read(path).strip()
+        if not raw.isdigit():
+            continue
+        if best is None or int(raw) > best["usage"]:
+            sensors = glob.glob(os.path.join(os.path.dirname(path), "hwmon", "hwmon*", "temp1_input"))
+            celsius = read(sensors[0]).strip() if sensors else ""
+            best = {"usage": int(raw),
+                    "celsius": round(int(celsius) / 1000, 1) if celsius.isdigit() else None}
+    return best
+
+
 def counters():
     """The raw totals a rate is the difference of, and when they were read."""
     return (time.monotonic(), cpu_times(), network_bytes())
@@ -204,6 +234,7 @@ def report(before, after, slow=None):
             "load": [float(value) for value in load] if len(load) == 3 else [0, 0, 0],
         },
         "memory": memory(),
+        "gpu": graphics(),
         "disks": slow["disks"],
         "network": {
             "down": max(0, int((second_net[0] - first_net[0]) / span)),

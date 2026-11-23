@@ -50,6 +50,7 @@ Singleton {
     property string networkInterface: ""
     property string networkAddress: ""
     property var temperature: null
+    property var gpu: null
     property int uptime: 0
 
     property var cpuHistory: []
@@ -57,6 +58,7 @@ Singleton {
     property var downHistory: []
     property var upHistory: []
     property var temperatureHistory: []
+    property var gpuHistory: []
 
     readonly property real memoryFraction:
         root.memoryTotal > 0 ? root.memoryUsed / root.memoryTotal : 0
@@ -136,6 +138,7 @@ Singleton {
         root.networkInterface = data.network.interface ?? ""
         root.networkAddress = data.network.address ?? ""
         root.temperature = data.temperature
+        root.gpu = data.gpu ?? null
         root.uptime = data.uptime
 
         root.cpuHistory = root.push(root.cpuHistory, root.cpu / 100)
@@ -144,6 +147,8 @@ Singleton {
         root.upHistory = root.push(root.upHistory, root.networkUp)
         if (root.temperature)
             root.temperatureHistory = root.push(root.temperatureHistory, root.temperature.celsius)
+        if (root.gpu)
+            root.gpuHistory = root.push(root.gpuHistory, root.gpu.usage / 100)
 
         root.ready = true
     }

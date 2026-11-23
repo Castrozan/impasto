@@ -1440,6 +1440,7 @@ QtObject {
             "%1 threads": "%1 hilos",
             "up %1": "encendido %1",
             "Temperature": "Temperatura",
+            "Graphics": "Gráficos",
             "Storage": "Almacenamiento",
             "%1 free": "%1 libres",
             "Image": "Imagen",

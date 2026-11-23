@@ -139,6 +139,20 @@ ColumnLayout {
                     }
                 }
             }
+
+            StatCard {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 3
+                Layout.fillHeight: true
+                visible: StatsService.gpu !== null
+                icon: "󰢮"
+                title: Tr.t("Graphics")
+                reading: StatsService.gpu ? `${StatsService.gpu.usage.toFixed(0)}%` : "—"
+                detail: StatsService.gpu && StatsService.gpu.celsius !== null
+                    ? `${StatsService.gpu.celsius}°` : ""
+                series: StatsService.gpuHistory
+                accent: Theme.green
+            }
         }
 
         ColumnLayout {
