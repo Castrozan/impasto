@@ -50,6 +50,7 @@ Singleton {
         { id: "netspeed",      name: "Network speed", bar: true,  desk: false, width: Theme.cardWidth, height: Theme.cardHeight(3, Theme.cardRowGap + 36) },
         { id: "keyboard",      name: "Keyboard layout", bar: true, desk: false, width: Theme.cardWidth, height: Theme.cardHeight(1, 0) },
         { id: "bluetooth",     name: "Bluetooth",     bar: true,  width: Theme.cardWidth, height: Theme.cardHeight(3, 0) },
+        { id: "vpn",           name: "VPN",           bar: true,  desk: false, width: Theme.cardWidth, height: Theme.cardHeight(2, 0) },
         { id: "devices",       name: "Devices",       bar: true,  width: Theme.cardWidth, height: Theme.cardHeight(2, 0) },
         { id: "notifications", name: "Notifications", bar: true,  desk: false, width: Theme.cardWidth, height: Theme.cardHeight(7, 0) },
         { id: "weather",       name: "Weather",       bar: true,  width: Theme.cardWidth, height: Theme.cardHeight(0, 50) },
@@ -211,6 +212,8 @@ Singleton {
             return BluetoothService.icon
         case "devices":
             return "󰂯"
+        case "vpn":
+            return VpnService.icon
         case "volume":
             return AudioService.icon
         case "brightness":
@@ -287,6 +290,8 @@ Singleton {
             return `↓ ${StatsService.rate(StatsService.networkDown)}  ↑ ${StatsService.rate(StatsService.networkUp)}`
         case "bluetooth":
             return BluetoothService.summary
+        case "vpn":
+            return VpnService.connected ? Tr.t("On") : Tr.t("Off")
         case "calendar":
             return Tr.date(root.today.date, "ddd d")
         }
@@ -632,6 +637,8 @@ Singleton {
             return true
         case "bluetooth":
             return BluetoothService.available
+        case "vpn":
+            return VpnService.available
         case "devices":
             // The pieces are drawn one per device (`BarZone`); with none
             // connected there is nothing to show or open.

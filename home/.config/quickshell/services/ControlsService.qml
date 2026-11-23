@@ -258,6 +258,13 @@ Singleton {
             action: () => { OsdService.suppressAudio(); BluetoothService.toggle() }
         },
         Toggle {
+            key: "vpn"; icon: VpnService.icon; label: Tr.t("VPN")
+            detail: VpnService.detail
+            active: VpnService.connected
+            available: VpnService.available; listed: VpnService.available
+            action: () => VpnService.toggle()
+        },
+        Toggle {
             key: "power"; icon: SystemService.powerIcon; label: Tr.t("Power")
             detail: Tr.t(SystemService.powerLabel || "Unknown")
             active: SystemService.powerShifted

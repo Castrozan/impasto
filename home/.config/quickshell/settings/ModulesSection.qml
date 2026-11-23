@@ -171,6 +171,33 @@ SettingsSection {
         }
     }
 
+    SettingGroup {
+        title: Tr.t("VPN")
+        note: Tr.t("The systemd unit that is the connection, and the commands that switch it.")
+        hint: Tr.t("The bar, its card and the control centre's tile show and switch the connection once all three are set. The unit is read every five seconds; the commands run in a shell, so they may be a script or a command with arguments.")
+
+        SettingField {
+            label: Tr.t("Unit")
+            placeholder: "openvpn-office.service"
+            value: SettingsService.vpnUnit
+            onEdited: value => SettingsService.set("vpnUnit", value.trim())
+        }
+
+        SettingField {
+            label: Tr.t("Connect command")
+            placeholder: "vpn-on"
+            value: SettingsService.vpnConnectCommand
+            onEdited: value => SettingsService.set("vpnConnectCommand", value.trim())
+        }
+
+        SettingField {
+            label: Tr.t("Disconnect command")
+            placeholder: "vpn-off"
+            value: SettingsService.vpnDisconnectCommand
+            onEdited: value => SettingsService.set("vpnDisconnectCommand", value.trim())
+        }
+    }
+
     // The tiles draw the pet itself, one in each style, and blink while
     // the pointer is on them.
     SettingGroup {

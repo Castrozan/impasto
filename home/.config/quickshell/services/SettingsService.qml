@@ -85,6 +85,9 @@ Singleton {
     readonly property alias wallpaperFavourites: config.wallpaperFavourites
     readonly property alias githubUser: config.githubUser
     readonly property alias markets: config.markets
+    readonly property alias vpnUnit: config.vpnUnit
+    readonly property alias vpnConnectCommand: config.vpnConnectCommand
+    readonly property alias vpnDisconnectCommand: config.vpnDisconnectCommand
     readonly property alias petStyle: config.petStyle
     readonly property alias launcherResults: config.launcherResults
     readonly property alias launcherOrder: config.launcherOrder
@@ -374,7 +377,7 @@ Singleton {
     readonly property var machineKeys: [
         "displays", "lidPolicy", "workspaceMode", "workspaceNumbers",
         "userName", "userAvatar", "language", "keyboard", "weatherPlace", "githubUser", "markets",
-        "emojiTone",
+        "vpnUnit", "vpnConnectCommand", "vpnDisconnectCommand", "emojiTone",
         "doNotDisturb", "nightLight", "nightTemperature", "barHidden", "desktopHidden",
         "gameMode", "powerTileProfile", "brightnessBelowFloor", "themeTargets", "calendarLinks",
         "cameraEnabled", "cameraEffect", "cameraReactions", "wallpaperFavourites",
@@ -966,6 +969,10 @@ Singleton {
         // The markets widget's pairs, BASE/QUOTE or a coin alone (in US
         // dollars), separated by commas.
         property string markets: "BTC, ETH, EUR/USD"
+
+        property string vpnUnit: ""
+        property string vpnConnectCommand: ""
+        property string vpnDisconnectCommand: ""
 
         // One of `PetService.styles`: how the pet is drawn, everywhere it is
         // drawn.
