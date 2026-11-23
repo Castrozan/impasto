@@ -438,6 +438,10 @@ Scope {
         function pin(): void {
             SettingsService.set("barAutohide", !SettingsService.barAutohide)
         }
+
+        function peek(): void {
+            ModuleService.barPeekRequested()
+        }
     }
 
     IpcHandler {

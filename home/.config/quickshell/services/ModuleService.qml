@@ -175,6 +175,7 @@ Singleton {
 
     // The settings window is not an island panel; shell.qml opens it.
     signal settingsRequested()
+    signal barPeekRequested()
 
     // ── CHIP SHAPE ──────────────────────────────────────────────────────────
     //

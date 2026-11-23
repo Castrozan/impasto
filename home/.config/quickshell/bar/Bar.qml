@@ -307,15 +307,36 @@ PanelWindow {
     onShownWorkspaceChanged: {
         if (root.seenWorkspace !== 0 && root.shownWorkspace !== 0
                 && root.autohide && SettingsService.barWorkspacePeekSeconds > 0) {
-            root.workspacePeek = true
-            workspacePeekRetract.restart()
+            root.peekFor(SettingsService.barWorkspacePeekSeconds * 1000)
         }
         root.seenWorkspace = root.shownWorkspace
     }
+    readonly property int requestedPeekMilliseconds: 3000
+
+    function peekFor(milliseconds: int): void {
+        root.workspacePeek = true
+        workspacePeekRetract.interval = milliseconds
+        workspacePeekRetract.restart()
+    }
+
     Timer {
         id: workspacePeekRetract
-        interval: SettingsService.barWorkspacePeekSeconds * 1000
         onTriggered: root.workspacePeek = false
+    }
+
+    Connections {
+        target: ModuleService
+
+        function onBarPeekRequested(): void {
+            if (!root.autohide)
+                return
+            if (root.workspacePeek) {
+                workspacePeekRetract.stop()
+                root.workspacePeek = false
+                return
+            }
+            root.peekFor(root.requestedPeekMilliseconds)
+        }
     }
     Timer { id: edgeReveal;  interval: 60;  onTriggered: root.edgePeek = true }
     Timer { id: edgeRetract; interval: 300; onTriggered: root.edgePeek = false }
