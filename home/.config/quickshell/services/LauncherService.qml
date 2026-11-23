@@ -528,10 +528,14 @@ QtObject {
         else if (entry.kind === "emoji")
             EmojiService.copy(entry.item)
         else if (entry.kind === "command")
-            Quickshell.execDetached(entry.argv)
+            Quickshell.execDetached(root.withoutShellInterfaceScale(entry.argv))
         // `panel` and `mode` entries are handled by the launcher panel: the
         // service does not know about the island, and a mode row keeps the
         // launcher open.
+    }
+
+    function withoutShellInterfaceScale(argv: var): var {
+        return ["env", "--unset=QT_SCALE_FACTOR"].concat(argv)
     }
 
     function copy(text: string): void {
@@ -541,6 +545,6 @@ QtObject {
     function launchDesktop(desktopId: string): void {
         if (!desktopId)
             return
-        Quickshell.execDetached(["gtk-launch", desktopId])
+        Quickshell.execDetached(root.withoutShellInterfaceScale(["gtk-launch", desktopId]))
     }
 }
