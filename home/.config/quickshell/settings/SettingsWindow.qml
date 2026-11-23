@@ -11,6 +11,7 @@ import QtQuick
 import Quickshell
 
 import "../components"
+import "../services"
 import "../theme"
 
 // Settings is a window rather than an island panel, so the bar and island stay
@@ -37,8 +38,10 @@ FloatingWindow {
     // Matched by the window rule in `windowrules.lua`.
     title: "Settings"
 
-    implicitWidth: 980
-    implicitHeight: 680
+    readonly property real contentScale: Math.max(1, Math.min(2, SettingsService.settingsScale))
+
+    implicitWidth: Math.min(980 * root.contentScale, root.screen?.width ?? Infinity)
+    implicitHeight: Math.min(680 * root.contentScale, root.screen?.height ?? Infinity)
 
     color: Theme.island
     visible: root.shown
@@ -51,7 +54,10 @@ FloatingWindow {
     // Built on open and destroyed on close, so pages query state when created
     // and release their subscriptions when gone.
     Loader {
-        anchors.fill: parent
+        width: parent.width / root.contentScale
+        height: parent.height / root.contentScale
+        scale: root.contentScale
+        transformOrigin: Item.TopLeft
         active: root.visible
         sourceComponent: panel
     }

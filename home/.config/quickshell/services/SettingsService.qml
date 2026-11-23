@@ -146,6 +146,7 @@ Singleton {
     readonly property alias wallpaperTransition: config.wallpaperTransition
     readonly property alias greeting: config.greeting
     readonly property alias fontFamily: config.fontFamily
+    readonly property alias settingsScale: config.settingsScale
     readonly property alias fontMono: config.fontMono
     readonly property alias notificationTimeout: config.notificationTimeout
     readonly property alias compositor: config.compositor
@@ -776,6 +777,8 @@ Singleton {
 
         property string fontFamily: "Inter, Cantarell, SF Pro Text, sans-serif"
         property string fontMono: "JetBrainsMono Nerd Font Mono, monospace"
+
+        property real settingsScale: 1.0
 
         property int notificationTimeout: 5000
 

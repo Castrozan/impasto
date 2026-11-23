@@ -234,6 +234,23 @@ SettingsSection {
         }
 
         SettingGroup {
+            title: Tr.t("Settings size")
+            note: Tr.t("This window only; the bar, the island and the dock keep theirs.")
+
+            SettingRow {
+                label: Tr.t("Size")
+                reading: Tr.t("Text and controls grow together")
+
+                SegmentedControl {
+                    options: [1, 1.15, 1.25, 1.5].map(
+                        scale => ({ id: String(scale), label: `${Math.round(scale * 100)}%` }))
+                    current: String(SettingsService.settingsScale)
+                    onSelected: id => SettingsService.set("settingsScale", Number(id))
+                }
+            }
+        }
+
+        SettingGroup {
             title: Tr.t("Monospace")
             note: Tr.t("The bar's glyphs and readings, and the terminal.")
             hint: Tr.t("kitty is given the same family, so the terminal and the shell always match. It must be a Nerd Font, or the bar's icons show as empty boxes.")
