@@ -309,7 +309,8 @@ PanelWindow {
                 && root.autohide && SettingsService.barWorkspacePeekSeconds > 0) {
             root.peekFor(SettingsService.barWorkspacePeekSeconds * 1000)
         }
-        root.seenWorkspace = root.shownWorkspace
+        if (root.shownWorkspace !== 0)
+            root.seenWorkspace = root.shownWorkspace
     }
     readonly property int requestedPeekMilliseconds: 3000
 

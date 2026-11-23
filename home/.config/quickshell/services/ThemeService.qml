@@ -64,9 +64,31 @@ QtObject {
         watchChanges: true
         printErrors: false
 
-        onFileChanged: reload()
-        onLoaded: root.adoptPaletteFile(text())
-        onLoadFailed: root.paletteFileValid = false
+        onFileChanged: {
+            reload()
+            root.paletteRearm.attempts = 0
+            root.paletteRearm.restart()
+        }
+        onLoaded: {
+            root.paletteRearm.stop()
+            root.adoptPaletteFile(text())
+        }
+        onLoadFailed: root.paletteRearm.retry()
+    }
+
+    readonly property Timer paletteRearm: Timer {
+        property int attempts: 0
+        readonly property int maximumAttempts: 10
+
+        interval: 500
+        onTriggered: root.paletteView.reload()
+
+        function retry(): void {
+            if (paletteRearm.attempts >= paletteRearm.maximumAttempts)
+                return
+            paletteRearm.attempts += 1
+            paletteRearm.restart()
+        }
     }
 
     readonly property Process extractProcess: Process {

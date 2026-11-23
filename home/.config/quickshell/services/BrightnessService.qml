@@ -155,12 +155,14 @@ Singleton {
     // nothing else plugged in never runs ddcutil at all.
 
     property var buses: ({})
+    property bool detected: false
 
     readonly property bool external: Quickshell.screens.some(screen => !root.isPanel(screen.name))
 
     function detect(): void {
         if (!root.external) {
             root.buses = ({})
+            root.detected = true
             return
         }
         if (root.detector.running) {
@@ -191,6 +193,7 @@ Singleton {
         stdout: StdioCollector {
             onStreamFinished: root.buses = root.parse(text)
         }
+        onExited: root.detected = true
     }
 
     // Plugging a screen in changes the list more than once.
@@ -235,7 +238,7 @@ Singleton {
             property int ceiling: 0
             property bool answering: false
 
-            readonly property bool commanded: root.command !== ""
+            readonly property bool commanded: root.command !== "" && root.detected
                 && !display.backlight && display.bus === ""
 
             readonly property bool available: display.backlight || display.commanded
