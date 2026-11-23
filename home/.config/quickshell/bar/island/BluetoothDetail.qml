@@ -203,6 +203,7 @@ ColumnLayout {
                         Layout.fillWidth: true
                         text: {
                             if (entry.modelData.pairing) return Tr.t("Pairing…")
+                            if (entry.forgetArmed) return Tr.t("Click again to forget")
                             const bits = []
                             bits.push(Tr.t(entry.modelData.connected ? "Connected"
                                 : (entry.modelData.paired ? "Paired" : "Available")))
@@ -228,6 +229,12 @@ ColumnLayout {
 
             // A device paired from here connects once the pairing is done.
             property bool wasPairing: false
+            property bool forgetArmed: false
+
+            function disarmForgetWhenPointerLeaves(): void {
+                if (!entryMouse.containsMouse && !forgetMouse.containsMouse)
+                    entry.forgetArmed = false
+            }
 
             Connections {
                 target: entry.modelData
@@ -245,14 +252,8 @@ ColumnLayout {
                 anchors.fill: parent
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
-                acceptedButtons: Qt.LeftButton | Qt.RightButton
-                // The right button forgets a paired device, as the bin does.
-                onClicked: mouse => {
-                    if (mouse.button === Qt.RightButton) {
-                        if (entry.modelData.paired)
-                            BluetoothService.forgetDevice(entry.modelData)
-                        return
-                    }
+                onContainsMouseChanged: entry.disarmForgetWhenPointerLeaves()
+                onClicked: {
                     if (!entry.modelData.paired)
                         entry.wasPairing = true
                     BluetoothService.connectDevice(entry.modelData)
@@ -266,10 +267,10 @@ ColumnLayout {
                 anchors.rightMargin: entry.modelData.connected ? 34 : 12
                 anchors.verticalCenter: parent.verticalCenter
                 visible: entry.modelData.paired && (entryMouse.containsMouse || forgetMouse.containsMouse)
-                text: "󰆴"
+                text: entry.forgetArmed ? "󰄬" : "󰆴"
                 font.family: Theme.fontMono
                 font.pixelSize: 14
-                color: forgetMouse.containsMouse ? Theme.red : Theme.textMuted
+                color: entry.forgetArmed || forgetMouse.containsMouse ? Theme.red : Theme.textMuted
 
                 Behavior on color { ColorAnimation { duration: Theme.durationFast } }
 
@@ -279,7 +280,15 @@ ColumnLayout {
                     anchors.margins: -6
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: BluetoothService.forgetDevice(entry.modelData)
+                    onContainsMouseChanged: entry.disarmForgetWhenPointerLeaves()
+                    onClicked: {
+                        if (!entry.forgetArmed) {
+                            entry.forgetArmed = true
+                            return
+                        }
+                        entry.forgetArmed = false
+                        BluetoothService.forgetDevice(entry.modelData)
+                    }
                 }
             }
         }
