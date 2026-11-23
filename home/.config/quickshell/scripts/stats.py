@@ -165,8 +165,6 @@ def temperature():
 
 
 def graphics():
-    """The busiest GPU's load and temperature, or None on a machine without
-    one: nvidia-smi when it answers, otherwise what amdgpu and i915 expose."""
     if shutil.which("nvidia-smi"):
         try:
             result = subprocess.run(
