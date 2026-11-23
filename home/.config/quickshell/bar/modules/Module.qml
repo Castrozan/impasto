@@ -39,6 +39,7 @@ Item {
         keyboard: keyboardModule,
         bluetooth: bluetoothModule,
         vpn: vpnModule,
+        keyboardlight: keyboardBacklightModule,
         devices: devicesModule,
         weather: weatherModule,
         github: githubModule,
@@ -77,6 +78,7 @@ Item {
     Component { id: keyboardModule;   KeyboardModule {} }
     Component { id: bluetoothModule;  BluetoothModule {} }
     Component { id: vpnModule;        VpnModule {} }
+    Component { id: keyboardBacklightModule; KeyboardBacklightModule { compact: root.compact } }
     Component { id: devicesModule;    DevicesModule {} }
     Component { id: weatherModule;    WeatherModule {} }
     Component { id: githubModule;     GithubModule {} }

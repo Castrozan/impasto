@@ -51,6 +51,7 @@ Singleton {
         { id: "keyboard",      name: "Keyboard layout", bar: true, desk: false, width: Theme.cardWidth, height: Theme.cardHeight(1, 0) },
         { id: "bluetooth",     name: "Bluetooth",     bar: true,  width: Theme.cardWidth, height: Theme.cardHeight(3, 0) },
         { id: "vpn",           name: "VPN",           bar: true,  desk: false, width: Theme.cardWidth, height: Theme.cardHeight(2, 0) },
+        { id: "keyboardlight", name: "Keyboard backlight", bar: true, desk: false, width: Theme.cardWidth, height: Theme.cardHeight(1, 0) },
         { id: "devices",       name: "Devices",       bar: true,  width: Theme.cardWidth, height: Theme.cardHeight(2, 0) },
         { id: "notifications", name: "Notifications", bar: true,  desk: false, width: Theme.cardWidth, height: Theme.cardHeight(7, 0) },
         { id: "weather",       name: "Weather",       bar: true,  width: Theme.cardWidth, height: Theme.cardHeight(0, 50) },
@@ -181,7 +182,7 @@ Singleton {
     // A state or a count (the network, the bell, the date, the pending
     // updates) has nothing to fill, so it keeps its symbol in either shape.
     readonly property var ringed: ["media", "timer", "claude", "codex", "battery", "volume",
-        "brightness", "stats", "pet"]
+        "brightness", "keyboardlight", "stats", "pet"]
 
     // A piece's own shape when it has one, the bar's when it does not. A
     // device measures too, but only a chip for a device has a ring
@@ -214,6 +215,8 @@ Singleton {
             return "󰂯"
         case "vpn":
             return VpnService.icon
+        case "keyboardlight":
+            return KeyboardBacklightService.icon
         case "volume":
             return AudioService.icon
         case "brightness":
@@ -292,6 +295,8 @@ Singleton {
             return BluetoothService.summary
         case "vpn":
             return VpnService.connected ? Tr.t("On") : Tr.t("Off")
+        case "keyboardlight":
+            return `${KeyboardBacklightService.percent}%`
         case "calendar":
             return Tr.date(root.today.date, "ddd d")
         }
@@ -639,6 +644,8 @@ Singleton {
             return BluetoothService.available
         case "vpn":
             return VpnService.available
+        case "keyboardlight":
+            return KeyboardBacklightService.available
         case "devices":
             // The pieces are drawn one per device (`BarZone`); with none
             // connected there is nothing to show or open.

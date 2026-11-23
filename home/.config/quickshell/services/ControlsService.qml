@@ -265,6 +265,13 @@ Singleton {
             action: () => VpnService.toggle()
         },
         Toggle {
+            key: "keyboardlight"; icon: KeyboardBacklightService.icon; label: Tr.t("Keyboard backlight")
+            detail: KeyboardBacklightService.detail
+            active: KeyboardBacklightService.raw > 0
+            available: KeyboardBacklightService.available; listed: KeyboardBacklightService.available
+            action: () => KeyboardBacklightService.cycle()
+        },
+        Toggle {
             key: "power"; icon: SystemService.powerIcon; label: Tr.t("Power")
             detail: Tr.t(SystemService.powerLabel || "Unknown")
             active: SystemService.powerShifted
