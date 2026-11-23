@@ -121,7 +121,13 @@ Singleton {
 
     property bool pendingCapture: false
 
+    readonly property string externalLockCommand: Quickshell.env("IMPASTO_LOCK_COMMAND") || ""
+
     function lock(): void {
+        if (root.externalLockCommand !== "") {
+            Quickshell.execDetached(["sh", "-c", root.externalLockCommand])
+            return
+        }
         if (root.locked)
             return
         root.message = ""
