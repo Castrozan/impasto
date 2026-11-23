@@ -64,7 +64,7 @@ Singleton {
     // Whether it is painted on a screen: away under a fullscreen window on
     // that screen alone.
     function shownOn(name: string): bool {
-        return root.enabled && (root.count > 0 || root.hasLauncher)
+        return SettingsService.arrived && root.enabled && (root.count > 0 || root.hasLauncher)
             && root.coveredScreens.indexOf(" " + name + " ") < 0
     }
 

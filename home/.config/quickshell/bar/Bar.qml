@@ -254,7 +254,7 @@ PanelWindow {
     // window is zen on its own, and only the readout rises over the window.
     readonly property bool covered: !!root.screen
         && DockService.coveredScreens.includes(` ${root.screen.name} `)
-    readonly property bool zen: SettingsService.barHidden || root.covered
+    readonly property bool zen: !SettingsService.arrived || SettingsService.barHidden || root.covered
         || (root.autohide && !root.edgePeek && !root.panelOpen)
 
     // ── AUTOHIDE ────────────────────────────────────────────────────────────
