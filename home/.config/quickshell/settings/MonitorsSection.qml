@@ -430,6 +430,13 @@ SettingsSection {
                     onToggled: checked => SettingsService.set("brightnessBelowFloor", checked)
                 }
             }
+
+            SettingField {
+                label: Tr.t("Command")
+                placeholder: "brightness"
+                value: SettingsService.brightnessCommand
+                onEdited: value => SettingsService.set("brightnessCommand", value.trim())
+            }
         }
     }
 

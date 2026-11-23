@@ -68,6 +68,9 @@ Singleton {
         root.current?.stepSlider(delta)
     }
 
+    readonly property string command: SettingsService.brightnessCommand.trim()
+    readonly property int commandMinimum: 10
+
     readonly property bool belowFloor: SettingsService.brightnessBelowFloor === true
     readonly property int sliderMinimum: root.belowFloor ? 0 : 1
     readonly property int slider: root.current?.slider ?? 0
@@ -232,7 +235,10 @@ Singleton {
             property int ceiling: 0
             property bool answering: false
 
-            readonly property bool available: display.backlight
+            readonly property bool commanded: root.command !== ""
+                && !display.backlight && display.bus === ""
+
+            readonly property bool available: display.backlight || display.commanded
                 || (display.bus !== "" && display.answering)
             readonly property int percent: display.backlight ? root.backlightPercent : display.level
             readonly property string icon: display.dim > 0 ? "󰌁" : root.iconFor(display.percent)
@@ -288,7 +294,8 @@ Singleton {
             function setPercent(value: int): void {
                 if (!display.available)
                     return
-                const clamped = Math.max(1, Math.min(100, value))
+                const clamped = Math.max(display.commanded ? root.commandMinimum : 1,
+                                         Math.min(100, value))
                 if (clamped === (display.wanted >= 0 ? display.wanted : display.percent))
                     return
                 display.wanted = clamped
@@ -320,15 +327,20 @@ Singleton {
                 display.written = display.wanted
                 display.writer.command = display.backlight
                     ? ["brightnessctl", "--quiet", "set", `${display.written}%`]
+                    : display.commanded
+                    ? ["sh", "-c", `${root.command} --set ${display.written}`]
                     : ["ddcutil", "--bus", display.bus, "--noverify", "--skip-ddc-checks",
                        "setvcp", "10", `${Math.round(display.written / 100 * display.ceiling)}`]
                 display.writer.running = true
             }
 
             function read(): void {
-                if (display.bus === "" || display.reader.running || display.writer.running)
+                if ((display.bus === "" && !display.commanded)
+                    || display.reader.running || display.writer.running)
                     return
-                display.reader.command = ["ddcutil", "--bus", display.bus, "--skip-ddc-checks",
+                display.reader.command = display.commanded
+                    ? ["sh", "-c", `${root.command} --get`]
+                    : ["ddcutil", "--bus", display.bus, "--skip-ddc-checks",
                                           "getvcp", "10", "--brief"]
                 display.reader.running = true
             }
@@ -339,7 +351,8 @@ Singleton {
                 onExited: code => {
                     if (display.wanted === display.written || (code !== 0 && !display.backlight))
                         display.wanted = -1
-                    if (code !== 0 && !display.backlight)
+                    if ((code !== 0 && !display.backlight)
+                        || (display.commanded && display.wanted < 0))
                         Qt.callLater(display.read)
                     else
                         Qt.callLater(display.flush)
@@ -350,6 +363,12 @@ Singleton {
             readonly property Process reader: Process {
                 stdout: StdioCollector {
                     onStreamFinished: {
+                        if (display.commanded) {
+                            const reported = parseFloat(text)
+                            if (reported >= 0 && display.wanted < 0)
+                                display.level = Math.round(reported)
+                            return
+                        }
                         const words = text.trim().split(/\s+/)
                         const level = parseInt(words[3])
                         const maximum = parseInt(words[4])
@@ -366,6 +385,7 @@ Singleton {
             }
 
             onBusChanged: display.read()
+            onCommandedChanged: display.read()
             Component.onCompleted: display.read()
         }
     }

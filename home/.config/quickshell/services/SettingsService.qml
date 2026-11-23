@@ -88,6 +88,7 @@ Singleton {
     readonly property alias vpnUnit: config.vpnUnit
     readonly property alias vpnConnectCommand: config.vpnConnectCommand
     readonly property alias vpnDisconnectCommand: config.vpnDisconnectCommand
+    readonly property alias brightnessCommand: config.brightnessCommand
     readonly property alias keyboardBacklightCommand: config.keyboardBacklightCommand
     readonly property alias keyboardBacklightLevel: config.keyboardBacklightLevel
     readonly property alias petStyle: config.petStyle
@@ -380,7 +381,7 @@ Singleton {
         "displays", "lidPolicy", "workspaceMode", "workspaceNumbers",
         "userName", "userAvatar", "language", "keyboard", "weatherPlace", "githubUser", "markets",
         "vpnUnit", "vpnConnectCommand", "vpnDisconnectCommand",
-        "keyboardBacklightCommand", "keyboardBacklightLevel", "emojiTone",
+        "brightnessCommand", "keyboardBacklightCommand", "keyboardBacklightLevel", "emojiTone",
         "doNotDisturb", "nightLight", "nightTemperature", "barHidden", "desktopHidden",
         "gameMode", "powerTileProfile", "brightnessBelowFloor", "themeTargets", "calendarLinks",
         "cameraEnabled", "cameraEffect", "cameraReactions", "wallpaperFavourites",
@@ -977,6 +978,7 @@ Singleton {
         property string vpnConnectCommand: ""
         property string vpnDisconnectCommand: ""
 
+        property string brightnessCommand: ""
         property string keyboardBacklightCommand: ""
         property int keyboardBacklightLevel: 5
 
