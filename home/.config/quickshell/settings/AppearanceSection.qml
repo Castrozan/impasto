@@ -120,6 +120,13 @@ SettingsSection {
                 value: SettingsService.wallpaperChangedCommand
                 onEdited: value => SettingsService.set("wallpaperChangedCommand", value.trim())
             }
+
+            SettingField {
+                label: Tr.t("Palette file")
+                placeholder: "~/.config/hypr-theme/current/theme/impasto-palette.json"
+                value: SettingsService.paletteFile
+                onEdited: value => SettingsService.set("paletteFile", value.trim())
+            }
         }
 
         // What `theme_manager.py` writes when the palette changes. Left on,

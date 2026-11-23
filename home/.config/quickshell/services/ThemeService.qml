@@ -57,18 +57,26 @@ QtObject {
         }
     }
 
+    property bool paletteFileValid: false
+
+    readonly property FileView paletteView: FileView {
+        path: SettingsService.paletteFile.trim()
+        watchChanges: true
+        printErrors: false
+
+        onFileChanged: reload()
+        onLoaded: root.adoptPaletteFile(text())
+        onLoadFailed: root.paletteFileValid = false
+    }
+
     readonly property Process extractProcess: Process {
         command: [root.script, "extract-colors"]
         stdout: StdioCollector {
             onStreamFinished: {
                 const colors = root.parseJson(text, "wallpaper colours")
-                if (!colors)
+                if (!colors || root.paletteFileValid)
                     return
-                root.dynamicColors = colors
-                if (root.activeId === "adaptive") {
-                    Theme.apply(colors, root.adaptiveTheme.name)
-                    root.pushTerminal(colors)
-                }
+                root.adoptColors(colors)
             }
         }
     }
@@ -258,6 +266,22 @@ QtObject {
             console.warn(`Cannot parse ${what}:`, error)
             return null
         }
+    }
+
+    function adoptColors(colors: var): void {
+        root.dynamicColors = colors
+        if (root.activeId === "adaptive") {
+            Theme.apply(colors, root.adaptiveTheme.name)
+            root.pushTerminal(colors)
+        }
+    }
+
+    function adoptPaletteFile(text: string): void {
+        const colors = root.parseJson(text, "palette file")
+        root.paletteFileValid = !!colors && typeof colors === "object"
+            && !!colors.background && !!colors.text && !!colors.accent
+        if (root.paletteFileValid)
+            root.adoptColors(colors)
     }
 
     function reloadAdaptiveColors(): void {
