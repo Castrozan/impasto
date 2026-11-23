@@ -35,6 +35,7 @@ Singleton {
     readonly property alias barEverywhere: config.barEverywhere
     readonly property alias barHidden: config.barHidden
     readonly property alias barAutohide: config.barAutohide
+    readonly property alias barWorkspacePeekSeconds: config.barWorkspacePeekSeconds
     readonly property alias screenCorners: config.screenCorners
     readonly property alias gameMode: config.gameMode
     readonly property alias barLeft: config.barLeft
@@ -571,6 +572,9 @@ Singleton {
         // Hide until pointed at: the bar waits above the screen and the top
         // edge brings it down.
         property bool barAutohide: false
+        // With the bar hidden until pointed at, how long it shows itself
+        // after the workspace changes; 0 leaves it hidden.
+        property int barWorkspacePeekSeconds: 0
 
         // Every screen's four corners rounded off in black.
         property bool screenCorners: false

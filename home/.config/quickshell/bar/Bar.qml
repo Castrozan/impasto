@@ -255,7 +255,7 @@ PanelWindow {
     readonly property bool covered: !!root.screen
         && DockService.coveredScreens.includes(` ${root.screen.name} `)
     readonly property bool zen: !SettingsService.arrived || SettingsService.barHidden || root.covered
-        || (root.autohide && !root.edgePeek && !root.panelOpen)
+        || (root.autohide && !root.edgePeek && !root.workspacePeek && !root.panelOpen)
 
     // ── AUTOHIDE ────────────────────────────────────────────────────────────
     //
@@ -300,6 +300,22 @@ PanelWindow {
                 else         { edgeReveal.stop();  edgeRetract.restart() }
             }
         }
+    }
+    property bool workspacePeek: false
+    readonly property int shownWorkspace: HyprlandService.activeOn(root.screen?.name ?? "")
+    property int seenWorkspace: 0
+    onShownWorkspaceChanged: {
+        if (root.seenWorkspace !== 0 && root.shownWorkspace !== 0
+                && root.autohide && SettingsService.barWorkspacePeekSeconds > 0) {
+            root.workspacePeek = true
+            workspacePeekRetract.restart()
+        }
+        root.seenWorkspace = root.shownWorkspace
+    }
+    Timer {
+        id: workspacePeekRetract
+        interval: SettingsService.barWorkspacePeekSeconds * 1000
+        onTriggered: root.workspacePeek = false
     }
     Timer { id: edgeReveal;  interval: 60;  onTriggered: root.edgePeek = true }
     Timer { id: edgeRetract; interval: 300; onTriggered: root.edgePeek = false }

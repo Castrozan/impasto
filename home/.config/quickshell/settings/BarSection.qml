@@ -114,6 +114,17 @@ SettingsSection {
                     onToggled: checked => SettingsService.set("barAutohide", checked)
                 }
             }
+
+            SettingSlider {
+                label: Tr.t("Show on workspace change")
+                value: SettingsService.barWorkspacePeekSeconds
+                from: 0
+                to: 10
+                unit: " s"
+                reading: SettingsService.barWorkspacePeekSeconds === 0
+                    ? Tr.t("Off") : `${SettingsService.barWorkspacePeekSeconds} s`
+                onMoved: value => SettingsService.set("barWorkspacePeekSeconds", Math.round(value))
+            }
         }
 
         SettingGroup {
