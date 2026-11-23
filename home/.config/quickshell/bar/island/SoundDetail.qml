@@ -57,126 +57,139 @@ ColumnLayout {
         onBack: root.back()
     }
 
-    DetailSection {
-        title: Tr.t("Volume")
+    Flickable {
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        clip: true
+        contentHeight: sections.implicitHeight
+        boundsBehavior: Flickable.StopAtBounds
 
-        LevelRow {
-            glyph: AudioService.icon
-            name: AudioService.ready ? AudioService.outputName(AudioService.sink) : ""
-            value: AudioService.volume
-            to: AudioService.ceiling
-            available: AudioService.ready
-            dimmed: AudioService.muted
-            onMoved: value => AudioService.setVolume(value)
-            onMarkClicked: AudioService.toggleMute()
-        }
-    }
+        ColumnLayout {
+            id: sections
 
-    DetailSection {
-        title: Tr.t("Apps")
-        visible: AudioService.streams.length > 0
+            width: parent.width
+            spacing: Theme.detailGap
 
-        Repeater {
-            model: AudioService.streams
+            DetailSection {
+                title: Tr.t("Volume")
 
-            LevelRow {
-                id: app
-
-                required property var modelData
-
-                picture: AudioService.streamIcon(app.modelData)
-                name: AudioService.streamName(app.modelData)
-                value: app.modelData.audio ? Math.round(app.modelData.audio.volume * 100) : 0
-                dimmed: app.modelData.audio ? app.modelData.audio.muted : false
-                onMoved: value => AudioService.setStreamVolume(app.modelData, value)
-                onMarkClicked: AudioService.toggleStreamMute(app.modelData)
+                LevelRow {
+                    glyph: AudioService.icon
+                    name: AudioService.ready ? AudioService.outputName(AudioService.sink) : ""
+                    value: AudioService.volume
+                    to: AudioService.ceiling
+                    available: AudioService.ready
+                    dimmed: AudioService.muted
+                    onMoved: value => AudioService.setVolume(value)
+                    onMarkClicked: AudioService.toggleMute()
+                }
             }
-        }
-    }
 
-    DetailSection {
-        title: Tr.t("Output")
+            DetailSection {
+                title: Tr.t("Apps")
+                visible: AudioService.streams.length > 0
 
-        Repeater {
-            model: AudioService.outputs
+                Repeater {
+                    model: AudioService.streams
 
-            DetailChoice {
-                required property var modelData
+                    LevelRow {
+                        id: app
 
-                text: AudioService.outputName(modelData)
-                chosen: AudioService.sink === modelData
-                onPicked: AudioService.choose(modelData)
+                        required property var modelData
+
+                        picture: AudioService.streamIcon(app.modelData)
+                        name: AudioService.streamName(app.modelData)
+                        value: app.modelData.audio ? Math.round(app.modelData.audio.volume * 100) : 0
+                        dimmed: app.modelData.audio ? app.modelData.audio.muted : false
+                        onMoved: value => AudioService.setStreamVolume(app.modelData, value)
+                        onMarkClicked: AudioService.toggleStreamMute(app.modelData)
+                    }
+                }
             }
-        }
-    }
 
-    Repeater {
-        model: AudioService.bluetoothCards
+            DetailSection {
+                title: Tr.t("Output")
 
-        DetailSection {
-            id: card
+                Repeater {
+                    model: AudioService.outputs
 
-            required property var modelData
+                    DetailChoice {
+                        required property var modelData
 
-            title: card.modelData.description
+                        text: AudioService.outputName(modelData)
+                        chosen: AudioService.sink === modelData
+                        onPicked: AudioService.choose(modelData)
+                    }
+                }
+            }
 
             Repeater {
-                model: card.modelData.profiles
+                model: AudioService.bluetoothCards
 
-                DetailChoice {
+                DetailSection {
+                    id: card
+
                     required property var modelData
 
-                    text: modelData.description
-                    chosen: card.modelData.activeProfile === modelData.name
-                    onPicked: AudioService.setCardProfile(card.modelData, modelData)
+                    title: card.modelData.description
+
+                    Repeater {
+                        model: card.modelData.profiles
+
+                        DetailChoice {
+                            required property var modelData
+
+                            text: modelData.description
+                            chosen: card.modelData.activeProfile === modelData.name
+                            onPicked: AudioService.setCardProfile(card.modelData, modelData)
+                        }
+                    }
+                }
+            }
+
+            DetailSection {
+                title: Tr.t("Input")
+                visible: AudioService.inputs.length > 0
+
+                Repeater {
+                    model: AudioService.inputs
+
+                    DetailChoice {
+                        required property var modelData
+
+                        text: AudioService.outputName(modelData)
+                        chosen: AudioService.source === modelData
+                        onPicked: AudioService.chooseInput(modelData)
+                    }
+                }
+            }
+
+            // Only when EasyEffects is installed.
+            DetailSection {
+                title: Tr.t("Effects")
+                visible: AudioService.easyEffectsAvailable
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: Theme.detailRow
+                    spacing: 10
+
+                    Text {
+                        Layout.fillWidth: true
+                        text: !AudioService.easyEffectsRunning ? Tr.t("EasyEffects is not running")
+                            : AudioService.easyEffectsBypassed ? Tr.t("EasyEffects is bypassed")
+                            : Tr.t("EasyEffects is on")
+                        font.family: Theme.fontFamily
+                        font.pixelSize: Theme.fontSizeSmall
+                        color: Theme.text
+                    }
+
+                    PillButton {
+                        text: Tr.t("Open")
+                        onClicked: AudioService.openEasyEffects()
+                    }
                 }
             }
         }
     }
-
-    DetailSection {
-        title: Tr.t("Input")
-        visible: AudioService.inputs.length > 0
-
-        Repeater {
-            model: AudioService.inputs
-
-            DetailChoice {
-                required property var modelData
-
-                text: AudioService.outputName(modelData)
-                chosen: AudioService.source === modelData
-                onPicked: AudioService.chooseInput(modelData)
-            }
-        }
-    }
-
-    // Only when EasyEffects is installed.
-    DetailSection {
-        title: Tr.t("Effects")
-        visible: AudioService.easyEffectsAvailable
-
-        RowLayout {
-            Layout.fillWidth: true
-            Layout.preferredHeight: Theme.detailRow
-            spacing: 10
-
-            Text {
-                Layout.fillWidth: true
-                text: !AudioService.easyEffectsRunning ? Tr.t("EasyEffects is not running")
-                    : AudioService.easyEffectsBypassed ? Tr.t("EasyEffects is bypassed")
-                    : Tr.t("EasyEffects is on")
-                font.family: Theme.fontFamily
-                font.pixelSize: Theme.fontSizeSmall
-                color: Theme.text
-            }
-
-            PillButton {
-                text: Tr.t("Open")
-                onClicked: AudioService.openEasyEffects()
-            }
-        }
-    }
-
-    Item { Layout.fillHeight: true }
 }

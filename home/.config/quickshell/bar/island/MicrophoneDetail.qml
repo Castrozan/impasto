@@ -30,57 +30,70 @@ ColumnLayout {
         onBack: root.back()
     }
 
-    DetailSection {
-        title: Tr.t("Volume")
+    Flickable {
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        clip: true
+        contentHeight: sections.implicitHeight
+        boundsBehavior: Flickable.StopAtBounds
 
-        LevelRow {
-            glyph: AudioService.sourceIcon
-            name: AudioService.sourceReady ? AudioService.outputName(AudioService.source) : ""
-            value: AudioService.sourceVolume
-            available: AudioService.sourceReady
-            dimmed: AudioService.sourceMuted
-            onMoved: value => AudioService.setSourceVolume(value)
-            onMarkClicked: AudioService.toggleSourceMute()
-        }
-    }
+        ColumnLayout {
+            id: sections
 
-    DetailSection {
-        title: Tr.t("Recording")
-        visible: AudioService.captures.length > 0
+            width: parent.width
+            spacing: Theme.detailGap
 
-        Repeater {
-            model: AudioService.captures
+            DetailSection {
+                title: Tr.t("Volume")
 
-            LevelRow {
-                id: app
+                LevelRow {
+                    glyph: AudioService.sourceIcon
+                    name: AudioService.sourceReady ? AudioService.outputName(AudioService.source) : ""
+                    value: AudioService.sourceVolume
+                    available: AudioService.sourceReady
+                    dimmed: AudioService.sourceMuted
+                    onMoved: value => AudioService.setSourceVolume(value)
+                    onMarkClicked: AudioService.toggleSourceMute()
+                }
+            }
 
-                required property var modelData
+            DetailSection {
+                title: Tr.t("Recording")
+                visible: AudioService.captures.length > 0
 
-                picture: AudioService.streamIcon(app.modelData)
-                name: AudioService.streamName(app.modelData)
-                value: app.modelData.audio ? Math.round(app.modelData.audio.volume * 100) : 0
-                dimmed: app.modelData.audio ? app.modelData.audio.muted : false
-                onMoved: value => AudioService.setStreamVolume(app.modelData, value)
-                onMarkClicked: AudioService.toggleStreamMute(app.modelData)
+                Repeater {
+                    model: AudioService.captures
+
+                    LevelRow {
+                        id: app
+
+                        required property var modelData
+
+                        picture: AudioService.streamIcon(app.modelData)
+                        name: AudioService.streamName(app.modelData)
+                        value: app.modelData.audio ? Math.round(app.modelData.audio.volume * 100) : 0
+                        dimmed: app.modelData.audio ? app.modelData.audio.muted : false
+                        onMoved: value => AudioService.setStreamVolume(app.modelData, value)
+                        onMarkClicked: AudioService.toggleStreamMute(app.modelData)
+                    }
+                }
+            }
+
+            DetailSection {
+                title: Tr.t("Input")
+
+                Repeater {
+                    model: AudioService.inputs
+
+                    DetailChoice {
+                        required property var modelData
+
+                        text: AudioService.outputName(modelData)
+                        chosen: AudioService.source === modelData
+                        onPicked: AudioService.chooseInput(modelData)
+                    }
+                }
             }
         }
     }
-
-    DetailSection {
-        title: Tr.t("Input")
-
-        Repeater {
-            model: AudioService.inputs
-
-            DetailChoice {
-                required property var modelData
-
-                text: AudioService.outputName(modelData)
-                chosen: AudioService.source === modelData
-                onPicked: AudioService.chooseInput(modelData)
-            }
-        }
-    }
-
-    Item { Layout.fillHeight: true }
 }

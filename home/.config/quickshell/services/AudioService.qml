@@ -215,14 +215,17 @@ Singleton {
     // the outputs and the inputs. The microphone's page is the same shape, for the
     // applications recording and the inputs.
     readonly property int panelWidth: 440
-    readonly property int panelHeight: 2 * Theme.panelPadding + Theme.detailHeader
+    readonly property int panelHeightLimit: 614
+    readonly property int panelHeight: Math.min(root.panelHeightLimit, root.panelContentHeight)
+    readonly property int microphoneHeight: Math.min(root.panelHeightLimit, root.microphoneContentHeight)
+    readonly property int panelContentHeight: 2 * Theme.panelPadding + Theme.detailHeader
         + Theme.detailSection(1)
         + (root.streams.length > 0 ? Theme.detailSection(root.streams.length) : 0)
         + Theme.detailSection(root.outputs.length)
         + root.bluetoothCards.reduce((total, card) => total + Theme.detailSection(card.profiles.length), 0)
         + (root.inputs.length > 0 ? Theme.detailSection(root.inputs.length) : 0)
         + (root.easyEffectsAvailable ? Theme.detailSection(1) : 0)
-    readonly property int microphoneHeight: 2 * Theme.panelPadding + Theme.detailHeader
+    readonly property int microphoneContentHeight: 2 * Theme.panelPadding + Theme.detailHeader
         + Theme.detailSection(1)
         + (root.captures.length > 0 ? Theme.detailSection(root.captures.length) : 0)
         + Theme.detailSection(Math.max(1, root.inputs.length))
