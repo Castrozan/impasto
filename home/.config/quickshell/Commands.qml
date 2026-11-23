@@ -434,6 +434,10 @@ Scope {
         function toggle(): void {
             SettingsService.set("barHidden", !SettingsService.barHidden)
         }
+
+        function pin(): void {
+            SettingsService.set("barAutohide", !SettingsService.barAutohide)
+        }
     }
 
     IpcHandler {

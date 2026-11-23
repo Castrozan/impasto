@@ -235,8 +235,9 @@ QtObject {
     // (`keybinds.lua`). A dot on a bar and a cell in the overview are both
     // drawn on one screen and mean it.
     function focus(workspaceId: int): void {
-        Hyprland.dispatch(
-            `hl.dsp.focus({ workspace = ${workspaceId}, on_current_monitor = true })`)
+        CompositorDispatch.send(
+            `hl.dsp.focus({ workspace = ${workspaceId}, on_current_monitor = true })`,
+            `focusworkspaceoncurrentmonitor ${workspaceId}`)
     }
 
     // The special workspace open over a screen (`special:name`), or "" when
@@ -457,29 +458,34 @@ QtObject {
 
     // Shows or hides a special workspace by its name without `special:`.
     function toggleSpecial(name: string): void {
-        Hyprland.dispatch(`hl.dsp.workspace.toggle_special("${name}")`)
+        CompositorDispatch.send(`hl.dsp.workspace.toggle_special("${name}")`,
+            `togglespecialworkspace ${name}`)
     }
 
     // A scratchpad as its key opens it (`keybinds.lua`): its command started
     // on it first when it holds no window, then shown or hidden.
     function toggleScratchpad(name: string, command: string): void {
         if ((command ?? "") !== "" && root.specialClientsOf(`special:${name}`).length === 0)
-            Hyprland.dispatch(`hl.dsp.exec_cmd(${JSON.stringify(command)}, { workspace = "special:${name}" })`)
+            CompositorDispatch.send(`hl.dsp.exec_cmd(${JSON.stringify(command)}, { workspace = "special:${name}" })`,
+                `exec [workspace special:${name} silent] ${command}`)
         root.toggleSpecial(name)
     }
 
     function focusWindow(address: string): void {
-        Hyprland.dispatch(`hl.dsp.focus({ window = "address:${address}" })`)
+        CompositorDispatch.send(`hl.dsp.focus({ window = "address:${address}" })`,
+            `focuswindow address:${address}`)
     }
 
     function closeWindow(address: string): void {
-        Hyprland.dispatch(`hl.dsp.window.close({ window = "address:${address}" })`)
+        CompositorDispatch.send(`hl.dsp.window.close({ window = "address:${address}" })`,
+            `closewindow address:${address}`)
         root.refresh()
         root.loadClients()
     }
 
     function toggleFloating(address: string): void {
-        Hyprland.dispatch(`hl.dsp.window.float({ window = "address:${address}" })`)
+        CompositorDispatch.send(`hl.dsp.window.float({ window = "address:${address}" })`,
+            `togglefloating address:${address}`)
         root.refresh()
         root.loadClients()
     }
@@ -495,21 +501,23 @@ QtObject {
         if (address === target)
             return
         const swap = `hl.dsp.window.swap({ window = "address:${address}", target = "address:${target}" })`
-        Hyprland.dispatch(`function() local p = hl.get_cursor_pos() hl.dispatch(${swap})`
-            + ` if p then hl.dispatch(hl.dsp.cursor.move({ x = p.x, y = p.y })) end end`)
+        CompositorDispatch.send(`function() local p = hl.get_cursor_pos() hl.dispatch(${swap})`
+            + ` if p then hl.dispatch(hl.dsp.cursor.move({ x = p.x, y = p.y })) end end`, "")
         root.loadClients()
     }
 
     // Floating windows only; tiled ones are placed by the layout.
     function moveFloating(address: string, x: int, y: int): void {
-        Hyprland.dispatch(`hl.dsp.window.move({ window = "address:${address}", x = ${x}, y = ${y} })`)
+        CompositorDispatch.send(`hl.dsp.window.move({ window = "address:${address}", x = ${x}, y = ${y} })`,
+            `movewindowpixel exact ${x} ${y},address:${address}`)
         root.loadClients()
     }
 
     // `follow = false` keeps the view in place. The Lua API accepts
     // `silent = true` but ignores it and switches workspace anyway.
     function moveClient(address: string, workspaceId: int): void {
-        Hyprland.dispatch(`hl.dsp.window.move({ workspace = ${workspaceId}, window = "address:${address}", follow = false })`)
+        CompositorDispatch.send(`hl.dsp.window.move({ workspace = ${workspaceId}, window = "address:${address}", follow = false })`,
+            `movetoworkspacesilent ${workspaceId},address:${address}`)
         root.refresh()
         root.loadClients()
     }
@@ -518,7 +526,8 @@ QtObject {
     // window where it was; focusing that workspace by hand would be the
     // workspace already shown, which goes back to the previous one.
     function minimizeWindow(address: string): void {
-        Hyprland.dispatch(`hl.dsp.window.move({ workspace = "${root.minimizedWorkspace}", window = "address:${address}", follow = false })`)
+        CompositorDispatch.send(`hl.dsp.window.move({ workspace = "${root.minimizedWorkspace}", window = "address:${address}", follow = false })`,
+            `movetoworkspacesilent ${root.minimizedWorkspace},address:${address}`)
         root.refresh()
         root.loadClients()
     }
@@ -526,7 +535,8 @@ QtObject {
     // Back onto the workspace the focused screen is showing, focused.
     function restoreWindow(address: string): void {
         const workspace = root.activeOn(root.focusedMonitor) || root.activeId
-        Hyprland.dispatch(`hl.dsp.window.move({ workspace = ${workspace}, window = "address:${address}", follow = false })`)
+        CompositorDispatch.send(`hl.dsp.window.move({ workspace = ${workspace}, window = "address:${address}", follow = false })`,
+            `movetoworkspacesilent ${workspace},address:${address}`)
         root.focusWindow(address)
         root.refresh()
         root.loadClients()
@@ -535,7 +545,8 @@ QtObject {
     // Sends a window to a named workspace (`special:name` for a special one),
     // leaving the view where it is.
     function moveClientToNamed(address: string, workspaceName: string): void {
-        Hyprland.dispatch(`hl.dsp.window.move({ workspace = "${workspaceName}", window = "address:${address}", follow = false })`)
+        CompositorDispatch.send(`hl.dsp.window.move({ workspace = "${workspaceName}", window = "address:${address}", follow = false })`,
+            `movetoworkspacesilent ${workspaceName},address:${address}`)
         root.refresh()
         root.loadClients()
     }

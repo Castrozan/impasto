@@ -208,7 +208,7 @@ Singleton {
             known = true
             Qt.callLater(root.writeKeys)
         }
-        onSaved: root.reloader.running = true
+        onSaved: root.reloader.running = CompositorDispatch.luaConfigManager
         onSaveFailed: error => console.warn("The keys could not be written:", error)
     }
 
@@ -298,7 +298,7 @@ Singleton {
             known = true
             Qt.callLater(root.writeScratchpads)
         }
-        onSaved: root.reloader.running = true
+        onSaved: root.reloader.running = CompositorDispatch.luaConfigManager
         onSaveFailed: error => console.warn("The scratchpads could not be written:", error)
     }
 

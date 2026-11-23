@@ -123,7 +123,7 @@ Singleton {
             LockService.lock()
             break
         case "logout":
-            Hyprland.dispatch("hl.dsp.exit()")
+            CompositorDispatch.send("hl.dsp.exit()", "exit")
             break
         case "reboot":
             root.exec(["systemctl", "reboot"])

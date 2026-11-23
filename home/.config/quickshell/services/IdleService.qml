@@ -79,7 +79,8 @@ Singleton {
     // Only the first monitor is handled.
     function screen(on: bool): void {
         const disagrees = on ? "not m.dpms_status" : "m.dpms_status"
-        Hyprland.dispatch(`function() local m = hl.get_monitors()[1]`
-            + ` if m and ${disagrees} then hl.dispatch(hl.dsp.dpms()) end end`)
+        CompositorDispatch.send(`function() local m = hl.get_monitors()[1]`
+            + ` if m and ${disagrees} then hl.dispatch(hl.dsp.dpms()) end end`,
+            `dpms ${on ? "on" : "off"}`)
     }
 }
