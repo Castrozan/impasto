@@ -88,6 +88,8 @@ Singleton {
     readonly property alias vpnUnit: config.vpnUnit
     readonly property alias vpnConnectCommand: config.vpnConnectCommand
     readonly property alias vpnDisconnectCommand: config.vpnDisconnectCommand
+    readonly property alias keyboardBacklightCommand: config.keyboardBacklightCommand
+    readonly property alias keyboardBacklightLevel: config.keyboardBacklightLevel
     readonly property alias petStyle: config.petStyle
     readonly property alias launcherResults: config.launcherResults
     readonly property alias launcherOrder: config.launcherOrder
@@ -377,7 +379,8 @@ Singleton {
     readonly property var machineKeys: [
         "displays", "lidPolicy", "workspaceMode", "workspaceNumbers",
         "userName", "userAvatar", "language", "keyboard", "weatherPlace", "githubUser", "markets",
-        "vpnUnit", "vpnConnectCommand", "vpnDisconnectCommand", "emojiTone",
+        "vpnUnit", "vpnConnectCommand", "vpnDisconnectCommand",
+        "keyboardBacklightCommand", "keyboardBacklightLevel", "emojiTone",
         "doNotDisturb", "nightLight", "nightTemperature", "barHidden", "desktopHidden",
         "gameMode", "powerTileProfile", "brightnessBelowFloor", "themeTargets", "calendarLinks",
         "cameraEnabled", "cameraEffect", "cameraReactions", "wallpaperFavourites",
@@ -973,6 +976,9 @@ Singleton {
         property string vpnUnit: ""
         property string vpnConnectCommand: ""
         property string vpnDisconnectCommand: ""
+
+        property string keyboardBacklightCommand: ""
+        property int keyboardBacklightLevel: 5
 
         // One of `PetService.styles`: how the pet is drawn, everywhere it is
         // drawn.

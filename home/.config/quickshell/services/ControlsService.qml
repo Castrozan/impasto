@@ -267,7 +267,7 @@ Singleton {
         Toggle {
             key: "keyboardlight"; icon: KeyboardBacklightService.icon; label: Tr.t("Keyboard backlight")
             detail: KeyboardBacklightService.detail
-            active: KeyboardBacklightService.raw > 0
+            active: KeyboardBacklightService.percent > 0
             available: KeyboardBacklightService.available; listed: KeyboardBacklightService.available
             action: () => KeyboardBacklightService.cycle()
         },

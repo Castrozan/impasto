@@ -16,12 +16,20 @@ Singleton {
     property int raw: 0
     property int maximum: 0
 
-    readonly property bool available: root.device !== "" && root.maximum > 0
-    readonly property int percent: root.maximum > 0 ? Math.round(root.raw / root.maximum * 100) : 0
-    readonly property string icon: root.raw > 0 ? "󰌌" : "󰌐"
-    readonly property string detail: root.raw > 0 ? `${root.percent}%` : Tr.t("Off")
+    readonly property string command: SettingsService.keyboardBacklightCommand.trim()
+    readonly property bool commanded: root.command !== ""
+
+    readonly property bool available: root.commanded || (root.device !== "" && root.maximum > 0)
+    readonly property int percent: root.commanded ? SettingsService.keyboardBacklightLevel
+        : root.maximum > 0 ? Math.round(root.raw / root.maximum * 100) : 0
+    readonly property string icon: root.percent > 0 ? "󰌌" : "󰌐"
+    readonly property string detail: root.percent > 0 ? `${root.percent}%` : Tr.t("Off")
 
     function cycle(): void {
+        if (root.commanded) {
+            root.setPercent(root.levels.find(level => level > root.percent) ?? 0)
+            return
+        }
         const next = root.levels
             .map(level => Math.round(level * root.maximum / 100))
             .find(step => step > root.raw)
@@ -29,6 +37,11 @@ Singleton {
     }
 
     function setPercent(value: int): void {
+        if (root.commanded) {
+            SettingsService.set("keyboardBacklightLevel", Math.max(0, Math.min(100, value)))
+            root.write.restart()
+            return
+        }
         root.setRaw(Math.round(value * root.maximum / 100))
     }
 
@@ -65,7 +78,8 @@ Singleton {
 
     readonly property Timer write: Timer {
         interval: 120
-        onTriggered: Quickshell.execDetached(["brightnessctl", "--quiet", "--class=leds",
-            `--device=${root.device}`, "set", String(root.raw)])
+        onTriggered: Quickshell.execDetached(root.commanded
+            ? ["sh", "-c", `${root.command} ${root.percent}`]
+            : ["brightnessctl", "--quiet", "--class=leds", `--device=${root.device}`, "set", String(root.raw)])
     }
 }

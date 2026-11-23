@@ -198,6 +198,19 @@ SettingsSection {
         }
     }
 
+    SettingGroup {
+        title: Tr.t("Keyboard backlight")
+        note: Tr.t("A command that sets the backlight, for a keyboard the system does not expose as a led.")
+        hint: Tr.t("The command runs in a shell with the wanted percent, 0 to 100, as its last argument, and wins over a led found under /sys/class/leds. Such a keyboard cannot be read back, so the level shown is the last one set from here.")
+
+        SettingField {
+            label: Tr.t("Command")
+            placeholder: "set-keyboard-backlight-brightness"
+            value: SettingsService.keyboardBacklightCommand
+            onEdited: value => SettingsService.set("keyboardBacklightCommand", value.trim())
+        }
+    }
+
     // The tiles draw the pet itself, one in each style, and blink while
     // the pointer is on them.
     SettingGroup {
