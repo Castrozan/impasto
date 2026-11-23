@@ -127,6 +127,30 @@ Rectangle {
         return root.preview ? n === 1 || n === 3 : HyprlandService.isOccupied(n)
     }
 
+    function neighbourOf(step: int): int {
+        for (let candidate = root.activeId + step; candidate >= 1 && candidate <= HyprlandService.span; candidate += step) {
+            if (root.isShown(candidate))
+                return candidate
+        }
+        return 0
+    }
+
+    property real wheelSpent: 0
+
+    WheelHandler {
+        enabled: !root.preview
+        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+        onWheel: event => {
+            root.wheelSpent += event.angleDelta.y
+            if (Math.abs(root.wheelSpent) < 120)
+                return
+            const target = root.neighbourOf(root.wheelSpent > 0 ? -1 : 1)
+            root.wheelSpent = 0
+            if (target > 0)
+                HyprlandService.focus(target)
+        }
+    }
+
     implicitHeight: Theme.capsuleHeight
     // Each slot carries its own gap, so a collapsed one takes no space; the
     // spare gap is subtracted here.
