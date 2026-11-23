@@ -173,6 +173,7 @@ QtObject {
     readonly property Process applyProcess: Process {
         onExited: exitCode => {
             if (exitCode === 0) {
+                root.runChangedCommand(root.asked)
                 root.currentProcess.running = true
             } else {
                 console.warn("Could not apply wallpaper:", root.asked)
@@ -272,9 +273,23 @@ QtObject {
         return entry && entry.type !== "" ? entry.type : "wipe"
     }
 
+    property string replacedWallpaper: ""
+    property string commandRanFor: ""
+
+    function runChangedCommand(path: string): void {
+        const command = SettingsService.wallpaperChangedCommand.trim()
+        if (command === "" || root.isMotion(path))
+            return
+        if (path === root.replacedWallpaper || path === root.commandRanFor)
+            return
+        root.commandRanFor = path
+        Quickshell.execDetached(["sh", "-c", `${command} "$1"`, "sh", path])
+    }
+
     function apply(path: string): void {
         if (!path)
             return
+        root.replacedWallpaper = root.currentWallpaper
         if (root.isMotion(path)) {
             root.currentMotion = path
         } else {

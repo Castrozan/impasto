@@ -109,6 +109,19 @@ SettingsSection {
             }
         }
 
+        SettingGroup {
+            title: Tr.t("Wallpaper changed")
+            note: Tr.t("A command that runs when the wallpaper changes to another picture.")
+            hint: Tr.t("The command runs in a shell with the picture's path as its last argument. It does not run when the same picture is applied again, at login, or for a video.")
+
+            SettingField {
+                label: Tr.t("Command")
+                placeholder: "hypr-theme-generate-and-apply"
+                value: SettingsService.wallpaperChangedCommand
+                onEdited: value => SettingsService.set("wallpaperChangedCommand", value.trim())
+            }
+        }
+
         // What `theme_manager.py` writes when the palette changes. Left on,
         // each program gets a theme file in its own config folder.
         SettingGroup {

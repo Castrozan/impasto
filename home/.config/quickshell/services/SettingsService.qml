@@ -92,6 +92,7 @@ Singleton {
     readonly property alias brightnessCommand: config.brightnessCommand
     readonly property alias keyboardBacklightCommand: config.keyboardBacklightCommand
     readonly property alias keyboardBacklightLevel: config.keyboardBacklightLevel
+    readonly property alias wallpaperChangedCommand: config.wallpaperChangedCommand
     readonly property alias petStyle: config.petStyle
     readonly property alias launcherResults: config.launcherResults
     readonly property alias launcherOrder: config.launcherOrder
@@ -383,7 +384,7 @@ Singleton {
         "displays", "lidPolicy", "workspaceMode", "workspaceNumbers",
         "userName", "userAvatar", "language", "keyboard", "weatherPlace", "githubUser", "markets",
         "vpnUnit", "vpnConnectCommand", "vpnDisconnectCommand",
-        "brightnessCommand", "keyboardBacklightCommand", "keyboardBacklightLevel", "emojiTone",
+        "brightnessCommand", "keyboardBacklightCommand", "keyboardBacklightLevel", "wallpaperChangedCommand", "emojiTone",
         "doNotDisturb", "nightLight", "nightTemperature", "barHidden", "desktopHidden",
         "gameMode", "powerTileProfile", "brightnessBelowFloor", "themeTargets", "calendarLinks",
         "cameraEnabled", "cameraEffect", "cameraReactions", "wallpaperFavourites",
@@ -989,6 +990,7 @@ Singleton {
         property string brightnessCommand: ""
         property string keyboardBacklightCommand: ""
         property int keyboardBacklightLevel: 5
+        property string wallpaperChangedCommand: ""
 
         // One of `PetService.styles`: how the pet is drawn, everywhere it is
         // drawn.
