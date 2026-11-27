@@ -566,9 +566,11 @@ def poster_of(video):
 # is stopped with the ones already playing.
 MOTION_TAG = "impasto-motion"
 
+MPVPAPER_COMMAND_PATTERN = "(^|/)mpvpaper( |$)"
+
 
 def stop_motion():
-    for pattern in (["-f", MOTION_TAG], ["-x", "mpvpaper"]):
+    for pattern in (["-f", MOTION_TAG], ["-f", MPVPAPER_COMMAND_PATTERN]):
         try:
             subprocess.run(["pkill", *pattern], capture_output=True, timeout=5)
         except (OSError, subprocess.SubprocessError):
@@ -598,7 +600,7 @@ def start_motion(video, delay=0.0):
 
 def motion_running():
     try:
-        return subprocess.run(["pgrep", "-x", "mpvpaper"], capture_output=True,
+        return subprocess.run(["pgrep", "-f", MPVPAPER_COMMAND_PATTERN], capture_output=True,
                               timeout=5).returncode == 0
     except (OSError, subprocess.SubprocessError):
         return False
