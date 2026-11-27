@@ -34,6 +34,7 @@
   inotify-tools,
   iproute2,
   libnotify,
+  mpvpaper,
   networkmanager,
   playerctl,
   procps,
@@ -70,6 +71,7 @@ let
     inotify-tools
     iproute2
     libnotify
+    mpvpaper
     networkmanager
     playerctl
     procps
