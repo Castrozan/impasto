@@ -63,7 +63,7 @@ Item {
                     text: Tr.date(clock.date, "ddd d MMM")
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontSizeSmall
-                    color: Theme.textMuted
+                    color: Theme.text
                 }
             }
         }
