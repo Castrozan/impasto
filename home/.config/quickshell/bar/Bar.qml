@@ -331,11 +331,6 @@ PanelWindow {
         function onBarPeekRequested(): void {
             if (!root.autohide)
                 return
-            if (root.workspacePeek) {
-                workspacePeekRetract.stop()
-                root.workspacePeek = false
-                return
-            }
             root.peekFor(root.requestedPeekMilliseconds)
         }
     }
