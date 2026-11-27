@@ -383,8 +383,9 @@ QtObject {
                 rest.push(entry)
         }
 
+        const hiddenPanels = Array.from(SettingsService.launcherHiddenPanels ?? [])
         for (const door of ControlsService.doors) {
-            if (door.id === "launcher")
+            if (door.id === "launcher" || hiddenPanels.includes(door.id))
                 continue
             offer({
                 kind: "panel", id: door.id, icon: door.icon,

@@ -154,6 +154,7 @@ Singleton {
     readonly property alias displays: config.displays
     readonly property alias keys: config.keys
     readonly property alias launcherPrefixes: config.launcherPrefixes
+    readonly property alias launcherHiddenPanels: config.launcherHiddenPanels
     readonly property alias cursorColor: config.cursorColor
     readonly property alias cursorSize: config.cursorSize
     readonly property alias shakeToFind: config.shakeToFind
@@ -821,6 +822,7 @@ Singleton {
         // Launcher sigil overrides, keyed by mode id; absent means the
         // default in `launcherPrefixDefaults`.
         property var launcherPrefixes: ({})
+        property var launcherHiddenPanels: []
 
         // ── DESKTOP ─────────────────────────────────────────────────────
         //
