@@ -278,7 +278,7 @@ QtObject {
 
     function runChangedCommand(path: string): void {
         const command = SettingsService.wallpaperChangedCommand.trim()
-        if (command === "" || root.isMotion(path))
+        if (command === "")
             return
         if (path === root.replacedWallpaper || path === root.commandRanFor)
             return
