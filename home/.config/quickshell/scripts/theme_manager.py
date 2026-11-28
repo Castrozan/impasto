@@ -415,7 +415,7 @@ MOTION_EXTENSIONS = (".mp4", ".webm", ".mkv", ".mov", ".gif")
 
 # Paused when nothing of the wallpaper shows, and under a fullscreen window.
 MPVPAPER_FLAGS = ["--auto-pause", "--auto-mode", "full"]
-MPV_OPTIONS = "no-audio loop hwdec=auto panscan=1.0"
+MPV_OPTIONS = "profile=fast no-audio loop hwdec=auto panscan=1.0"
 
 DEFAULT_STATE = {"activeTheme": "adaptive", "currentWallpaper": "", "currentMotion": ""}
 
