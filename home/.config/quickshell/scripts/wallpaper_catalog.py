@@ -292,7 +292,7 @@ def resolve_media(provider, identifier, page_url, preview):
         wallpaper = json.loads(payload)["data"]
         if wallpaper["id"] != identifier:
             raise CatalogError("Provider returned a different wallpaper")
-        return wallpaper["thumbs"]["large"] if preview else wallpaper["path"]
+        return wallpaper["thumbs"]["original"] if preview else wallpaper["path"]
 
     html, effective_url = document(provider, page_url)
     if page_identity(provider, effective_url) != identifier:
