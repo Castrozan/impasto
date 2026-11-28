@@ -89,7 +89,7 @@ Singleton {
     //
     // Capture is what the capture key does: the photo is taken at once, so
     // whatever the island has open is in it.
-    readonly property var buttonIds: ["launcher", "overview", "controls", "capture",
+    readonly property var buttonIds: ["launcher", "overview", "cyclewindow", "controls", "capture",
         "appearance", "notes", "board", "games", "keys", "packages", "settings", "session"]
 
     readonly property var buttons: {
@@ -102,6 +102,11 @@ Singleton {
             if (id === "capture") {
                 out[id] = { name: "Capture", glyph: "󰹑",
                             action: () => CaptureService.open("", "", "", 0) }
+                continue
+            }
+            if (id === "cyclewindow") {
+                out[id] = { name: "Cycle workspace windows", glyph: "󰖲",
+                            action: () => HyprlandService.cycleWorkspaceWindows() }
                 continue
             }
             const door = ControlsService.door(id)
@@ -176,6 +181,7 @@ Singleton {
     // The settings window is not an island panel; shell.qml opens it.
     signal settingsRequested()
     signal barPeekRequested()
+    signal barHideRequested()
 
     // ── CHIP SHAPE ──────────────────────────────────────────────────────────
     //

@@ -476,6 +476,10 @@ QtObject {
             `focuswindow address:${address}`)
     }
 
+    function cycleWorkspaceWindows(): void {
+        CompositorDispatch.send("hl.dsp.window.cycle_next({})", "cyclenext")
+    }
+
     function closeWindow(address: string): void {
         CompositorDispatch.send(`hl.dsp.window.close({ window = "address:${address}" })`,
             `closewindow address:${address}`)

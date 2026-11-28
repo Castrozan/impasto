@@ -438,6 +438,11 @@ Scope {
             SettingsService.set("barHidden", !SettingsService.barHidden)
         }
 
+        function hide(): void {
+            SettingsService.set("barHidden", true)
+            ModuleService.barHideRequested()
+        }
+
         function pin(): void {
             SettingsService.set("barAutohide", !SettingsService.barAutohide)
         }
