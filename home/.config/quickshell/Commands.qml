@@ -439,7 +439,6 @@ Scope {
         }
 
         function hide(): void {
-            SettingsService.set("barHidden", true)
             ModuleService.barHideRequested()
         }
 

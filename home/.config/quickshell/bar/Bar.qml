@@ -254,14 +254,8 @@ PanelWindow {
     // window is zen on its own, and only the readout rises over the window.
     readonly property bool covered: !!root.screen
         && DockService.coveredScreens.includes(` ${root.screen.name} `)
-    readonly property bool manuallyHidden: SettingsService.barHidden
-    onManuallyHiddenChanged: {
-        if (root.manuallyHidden)
-            root.cancelPeek()
-    }
-    readonly property bool zen: !SettingsService.arrived || root.covered
-        || (!root.timedPeek && (root.manuallyHidden
-            || (root.autohide && !root.edgePeek && !root.panelOpen)))
+    readonly property bool zen: !SettingsService.arrived || SettingsService.barHidden || root.covered
+        || (root.autohide && !root.edgePeek && !root.workspacePeek && !root.panelOpen)
 
     // ── AUTOHIDE ────────────────────────────────────────────────────────────
     //
@@ -278,7 +272,7 @@ PanelWindow {
     // The input follows each side's own extent rather than the whole band, so
     // the gaps between the capsules stay usable. A bezel is the band, and is
     // kept whole.
-    readonly property bool narrowBand: (root.manuallyHidden ? root.timedPeek : root.autohide)
+    readonly property bool narrowBand: root.autohide && !SettingsService.barHidden
         && !root.edgeToEdge
     readonly property bool sidesLive: root.narrowBand && !root.inert && !root.sidesAway
     readonly property point leftAt: {
@@ -307,12 +301,12 @@ PanelWindow {
             }
         }
     }
-    property bool timedPeek: false
+    property bool workspacePeek: false
     readonly property int shownWorkspace: HyprlandService.activeOn(root.screen?.name ?? "")
     property int seenWorkspace: 0
     onShownWorkspaceChanged: {
         if (root.seenWorkspace !== 0 && root.shownWorkspace !== 0
-                && root.autohide && !root.manuallyHidden && SettingsService.barWorkspacePeekSeconds > 0) {
+                && root.autohide && SettingsService.barWorkspacePeekSeconds > 0) {
             root.peekFor(SettingsService.barWorkspacePeekSeconds * 1000)
         }
         if (root.shownWorkspace !== 0)
@@ -321,31 +315,32 @@ PanelWindow {
     readonly property int requestedPeekMilliseconds: 3000
 
     function peekFor(milliseconds: int): void {
-        root.timedPeek = true
-        timedPeekRetract.interval = milliseconds
-        timedPeekRetract.restart()
-    }
-
-    function cancelPeek(): void {
-        timedPeekRetract.stop()
-        root.timedPeek = false
+        root.workspacePeek = true
+        workspacePeekRetract.interval = milliseconds
+        workspacePeekRetract.restart()
     }
 
     Timer {
-        id: timedPeekRetract
-        onTriggered: root.timedPeek = false
+        id: workspacePeekRetract
+        onTriggered: root.workspacePeek = false
     }
 
     Connections {
         target: ModuleService
 
         function onBarPeekRequested(): void {
-            if (!root.autohide && !root.manuallyHidden)
+            if (!root.autohide)
                 return
             root.peekFor(root.requestedPeekMilliseconds)
         }
 
-        function onBarHideRequested(): void { root.cancelPeek() }
+        function onBarHideRequested(): void {
+            workspacePeekRetract.stop()
+            edgeReveal.stop()
+            edgeRetract.stop()
+            root.workspacePeek = false
+            root.edgePeek = false
+        }
     }
     Timer { id: edgeReveal;  interval: 60;  onTriggered: root.edgePeek = true }
     Timer { id: edgeRetract; interval: 300; onTriggered: root.edgePeek = false }
