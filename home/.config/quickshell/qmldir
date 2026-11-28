@@ -153,7 +153,7 @@ LyricsDetail     1.0 bar/island/LyricsDetail.qml
 OsdLayer         1.0 bar/island/OsdLayer.qml
 TimerWidget      1.0 bar/widgets/TimerWidget.qml
 NotificationLayer 1.0 bar/island/NotificationLayer.qml
-AppearancePanel  1.0 bar/island/AppearancePanel.qml
+PalettePanel     1.0 bar/island/PalettePanel.qml
 ControlsPanel    1.0 bar/island/ControlsPanel.qml
 LauncherPanel    1.0 bar/island/LauncherPanel.qml
 StatsPanel       1.0 bar/island/StatsPanel.qml

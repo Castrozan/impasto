@@ -26,6 +26,8 @@ Scope {
     // The live bar's island, for the panels.
     property var island: null
 
+    signal panelCloseRequested()
+
     function ok(extra: var): string {
         return JSON.stringify(Object.assign({ ok: true }, extra ?? ({})))
     }
@@ -264,6 +266,7 @@ Scope {
 
         function close(): string {
             root.island?.close()
+            root.panelCloseRequested()
             return root.ok()
         }
 

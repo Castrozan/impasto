@@ -49,6 +49,8 @@
   quickshellConfigurationName ? "impasto",
 }:
 let
+  pythonWithWallpaperCatalog = python3.withPackages (packages: [ packages.beautifulsoup4 ]);
+
   runtimePrograms = [
     awww
     bluez
@@ -76,7 +78,7 @@ let
     playerctl
     procps
     pulseaudio
-    python3
+    pythonWithWallpaperCatalog
     quickshell
     satty
     slurp

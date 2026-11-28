@@ -28,6 +28,7 @@ import "./osk"
 import "./services"
 import "./settings"
 import "./theme"
+import "./wallpaper"
 
 // Entry point: the windows, the services that must start at boot, and the
 // wiring between services that may not reference each other.
@@ -236,8 +237,51 @@ ShellRoot {
     SettingsWindow {
         id: settingsWindow
 
-        // The palette and wallpaper pickers live on the island.
         onPanelRequested: panel => root.island?.open(panel)
+    }
+
+    Variants {
+        id: wallpaperPickers
+
+        model: Quickshell.screens
+
+        WallpaperPicker {
+            required property var modelData
+
+            screen: modelData
+            onPaletteRequested: {
+                close()
+                root.island?.open("palette")
+            }
+        }
+    }
+
+    readonly property var activeWallpaperPicker: {
+        for (const picker of wallpaperPickers.instances)
+            if (picker.shown)
+                return picker
+        return null
+    }
+
+    function openWallpaperPicker(): void {
+        if (LockService.locked || root.activeWallpaperPicker)
+            return
+        for (const picker of wallpaperPickers.instances) {
+            if (picker.screen?.name === root.liveScreenName) {
+                picker.open()
+                return
+            }
+        }
+        wallpaperPickers.instances[0]?.open()
+    }
+
+    Connections {
+        target: LockService
+
+        function onLockedChanged(): void {
+            if (LockService.locked)
+                root.activeWallpaperPicker?.close()
+        }
     }
 
     // The control centre's gear. The island has already closed itself.
@@ -246,6 +290,10 @@ ShellRoot {
 
         function onSettingsRequested(): void {
             settingsWindow.open()
+        }
+
+        function onWallpaperRequested(): void {
+            root.openWallpaperPicker()
         }
     }
 
@@ -473,8 +521,10 @@ ShellRoot {
     // An open panel holds the keyboard exclusively, which beats a normal
     // window, so the island closes first or the window cannot be typed in.
     function toggleSettings(): void {
-        if (!settingsWindow.shown)
+        if (!settingsWindow.shown) {
+            root.activeWallpaperPicker?.close()
             root.island?.close()
+        }
         settingsWindow.toggle()
     }
 
@@ -486,16 +536,22 @@ ShellRoot {
 
     GlobalShortcut {
         name: "appearance"
-        description: "Open the island appearance panel"
-        onPressed: root.island?.toggle("appearance")
+        description: "Open the wallpaper picker"
+        onPressed: {
+            if (root.activeWallpaperPicker)
+                root.activeWallpaperPicker.close()
+            else
+                root.island?.open("appearance")
+        }
     }
 
-    // Same panel, on the palette strip. Each name only closes from its own
-    // strip.
     GlobalShortcut {
         name: "palette"
-        description: "Open the island appearance panel on the palettes"
-        onPressed: root.island?.toggle("palette")
+        description: "Open the palette picker"
+        onPressed: {
+            root.activeWallpaperPicker?.close()
+            root.island?.toggle("palette")
+        }
     }
 
     GlobalShortcut {
@@ -770,6 +826,7 @@ ShellRoot {
     //   qs ipc call wallpaper set <path>
     Commands {
         island: root.island
+        onPanelCloseRequested: root.activeWallpaperPicker?.close()
     }
 
 }

@@ -274,6 +274,8 @@ debounced to one frame.
 - [k4](https://github.com/k4ditano/k4) — a dynamic island bar with a documented
   plugin API
 
+The MotionBGs and MoeWalls catalog adapters draw on [Xero Wallpapers](https://github.com/xerolinux/xero-wallpapers-gui), licensed under GPL-3.0.
+
 Built on [Quickshell](https://quickshell.org) and [Hyprland](https://hypr.land).
 The pointer is [Bibata](https://github.com/ful1e5/Bibata_Cursor), repainted;
 the folders are [Papirus](https://github.com/PapirusDevelopmentTeam/papirus-icon-theme),

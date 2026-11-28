@@ -25,6 +25,7 @@ Rectangle {
     // Settings is a separate window owned by `shell.qml`; the request is
     // passed up.
     signal settingsRequested()
+    signal wallpaperRequested()
 
     readonly property alias state: islandState
     readonly property bool expanded: islandState.expanded
@@ -95,8 +96,7 @@ Rectangle {
     // before the panel inside it is loaded.
     readonly property var panelSizes: ({
         controls:   { width: ControlsService.panelWidth, height: ControlsService.panelHeight },
-        appearance: root.appearanceSize,
-        palette:    root.appearanceSize,
+        palette:    { width: 940, height: 196 },
         stats:      { width: 940,  height: 614 },
         // Depends on the results when `launcherFits` is on.
         launcher:   { width: LauncherService.panelWidth,
@@ -143,10 +143,6 @@ Rectangle {
     // tab and the gap under it. Each of the three keeps its own size.
     readonly property int connectivityTabsHeight: Theme.segmentHeight + Theme.detailGap
 
-    // One panel under two names (its two strips), so switching between them
-    // slides instead of rebuilding. Fits five strip tiles and the large one.
-    readonly property var appearanceSize: ({ width: 940, height: 196 })
-
     // A module's detail, sized from the catalogue.
     readonly property var moduleSize: ModuleService.openSize(ModuleService.openId)
 
@@ -191,8 +187,7 @@ Rectangle {
 
     readonly property var panelComponents: ({
         controls: controlsPanel,
-        appearance: appearancePanel,
-        palette: appearancePanel,
+        palette: palettePanel,
         launcher: launcherPanel,
         wifi: networkDetail,
         sound: soundDetail,
@@ -222,6 +217,11 @@ Rectangle {
     })
 
     function open(panel: string): void {
+        if (panel === "appearance" && root.active) {
+            root.close()
+            root.wallpaperRequested()
+            return
+        }
         // A card in the island asking for its piece's detail.
         if (panel === "media" || panel === "weather") {
             ModuleService.activate(panel)
@@ -587,13 +587,9 @@ Rectangle {
     }
 
     Component {
-        id: appearancePanel
-        AppearancePanel {
-            page: islandState.openPanel === "palette" ? "palette" : "wallpaper"
-            onClosed: root.close()
-            // Up and Down switch strips by panel name, so `page` follows
-            // `openPanel`.
-            onPanelRequested: panel => root.open(panel)
+        id: palettePanel
+        PalettePanel {
+            onWallpaperRequested: root.open("appearance")
         }
     }
 
